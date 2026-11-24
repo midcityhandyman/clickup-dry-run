@@ -116,6 +116,8 @@ def parse_events(raw_events: list[dict[str, Any]]) -> list[Event]:
             raise ValueError(f"event #{n}: unknown or missing type")
         if not raw.get("task_id"):
             raise ValueError(f"event #{n}: missing task_id")
+        if raw["type"] == "custom_field_changed" and not raw.get("field"):
+            raise ValueError(f"event #{n}: custom_field_changed needs a 'field'")
         data = {k: v for k, v in raw.items() if k not in ("id", "type", "task_id", "at")}
         events.append(Event(str(raw.get("id") or f"ev{n}"), raw["type"], str(raw["task_id"]),
                             raw.get("at"), data))
@@ -164,6 +166,10 @@ class Simulator:
                 res.warnings.append(
                     f"event {event.id} refers to task {event.task_id}, not in the export; skipped")
                 continue
+            if event.type == "status_changed" and event.data.get("from") is None:
+                # exports often omit the old status; take it from the task so that
+                # triggers with a `from` filter can still match
+                event.data["from"] = res.final[event.task_id]["status"]
             apply_event(res.baseline[event.task_id], event)
             apply_event(res.final[event.task_id], event)
             res.events_replayed += 1
@@ -213,7 +219,9 @@ def simulate(automations: list[Automation], tasks: dict[str, dict[str, Any]],
              raw_events: list[dict[str, Any]], as_of: str | None = None,
              max_depth: int = 5) -> Result:
     """Convenience entry point used by the CLI, the demo and the tests."""
-    events = parse_events(raw_events)
+    simulator = Simulator(automations, tasks, max_depth)
+    result = simulator.run(parse_events(raw_events))
     if as_of:
-        events += due_date_events(tasks, as_of)
-    return Simulator(automations, tasks, max_depth).run(events)
+        # due dates are read after the replay, so a date an automation moved is honoured
+        simulator.run(due_date_events(result.final, as_of))
+    return result

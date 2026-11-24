@@ -53,3 +53,14 @@ def test_trigger_matching():
     assert not trigger_matches(trig, "status_changed", {"from": "new", "to": "complete"})
     assert not trigger_matches(trig, "priority_changed", {"to": "complete"})
     assert trigger_matches({"type": "status_changed"}, "status_changed", {"to": "anything"})
+
+
+def test_unquoted_yaml_dates_compare_as_iso_strings():
+    import yaml
+    conds = yaml.safe_load("""
+- {field: due_date, op: equals, value: 2026-03-06}
+- {field: due_date, op: in, value: [2026-03-06]}
+- {field: due_date, op: before, value: 2026-03-07}
+""")
+    assert all(not isinstance(c["value"], str) for c in conds[::2])  # really parsed as dates
+    assert conditions_pass(conds, TASK, "all") is True

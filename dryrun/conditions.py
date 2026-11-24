@@ -1,6 +1,7 @@
 """Trigger matching and condition evaluation. Pure functions, no state."""
 from __future__ import annotations
 
+from datetime import date
 from typing import Any
 
 
@@ -10,6 +11,8 @@ def norm(value: Any) -> Any:
         return value.strip().casefold()
     if isinstance(value, list):
         return [norm(v) for v in value]
+    if isinstance(value, date):  # YAML reads an unquoted 2026-03-06 as a date
+        return value.isoformat()
     return value
 
 

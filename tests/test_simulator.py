@@ -127,3 +127,28 @@ def test_projection_scales_window_to_thirty_days():
     result = simulate(rules, tasks(BASE), events)
     assert result.window_days() == 3
     assert result.projected_monthly_runs() == 20  # 2 runs in 3 days
+
+
+def test_as_of_uses_due_dates_as_they_stand_after_the_replay():
+    rules = autos(
+        auto("review", {"type": "status_changed", "to": "in review"},
+             [{"type": "set_due_date", "days_from_trigger": 2}]),
+        auto("nudge", {"type": "due_date_arrives"}, [{"type": "add_tag", "tag": "due"}]),
+    )
+    events = [status_event("in review")]  # 2026-03-02, so the due date moves to 03-04
+    moved_to = simulate(rules, tasks(BASE), events, as_of="2026-03-04")
+    assert [r.automation_id for r in moved_to.runs] == ["review", "nudge"]
+    stale = simulate(rules, tasks(BASE), events, as_of="2026-03-06")  # the snapshot date
+    assert [r.automation_id for r in stale.runs] == ["review"]
+
+
+def test_status_event_without_from_takes_it_from_the_task():
+    rules = autos(auto("reopen", {"type": "status_changed", "from": "new", "to": "open"},
+                       [{"type": "add_tag", "tag": "x"}]))
+    result = simulate(rules, tasks(BASE), [status_event("open"), status_event("open")])
+    assert len(result.runs) == 1  # the second event goes open -> open, so `from: new` fails
+
+
+def test_custom_field_event_without_field_is_rejected():
+    with pytest.raises(ValueError, match="custom_field_changed needs a 'field'"):
+        simulate([], tasks(BASE), [{"type": "custom_field_changed", "task_id": "T-1", "to": 1}])
