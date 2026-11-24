@@ -1,0 +1,15 @@
+[project]
+name = "clickup-dry-run"
+version = "0.1.0"
+description = "Dry run simulator for ClickUp-style task automations"
+requires-python = ">=3.10"
+dependencies = ["PyYAML>=6.0"]
+
+[project.scripts]
+dryrun = "dryrun.cli:main"
+
+[tool.setuptools]
+packages = ["dryrun"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

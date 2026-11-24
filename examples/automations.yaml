@@ -1,0 +1,101 @@
+# Example automations for the fake export in examples/export.json.
+# Shape: trigger (what happened), conditions (does this task qualify), actions (what to do).
+automations:
+  - id: intake-triage
+    name: New intake tasks get an owner and a triage tag
+    trigger:
+      type: task_created
+    conditions:
+      - field: list
+        op: equals
+        value: Intake
+    actions:
+      - type: add_assignee
+        assignee: Alex Sample
+      - type: add_tag
+        tag: triage
+
+  - id: urgent-escalation
+    name: Urgent tasks are tagged and commented
+    trigger:
+      type: priority_changed
+      to: urgent
+    actions:
+      - type: add_tag
+        tag: escalated
+      - type: add_comment
+        text: "Urgent: {{task.name}} needs a same day reply."
+
+  - id: escalated-is-urgent
+    name: Anything tagged escalated is forced to urgent
+    trigger:
+      type: tag_added
+      tag: escalated
+    actions:
+      - type: change_priority
+        to: urgent
+
+  - id: review-handoff
+    name: Hand work to the reviewer with a two day deadline
+    trigger:
+      type: status_changed
+      to: in review
+    actions:
+      - type: add_assignee
+        assignee: Riley Example
+      - type: set_due_date
+        days_from_trigger: 2
+
+  - id: complete-to-invoicing
+    name: Finished paid work moves to the invoicing list
+    trigger:
+      type: status_changed
+      to: complete
+    conditions:
+      - field: custom.Estimate
+        op: gt
+        value: 0
+    actions:
+      - type: move_to_list
+        to: Invoicing
+      - type: remove_tag
+        tag: triage
+
+  - id: invoicing-arrival
+    name: Tasks landing in Invoicing get a draft invoice
+    trigger:
+      type: moved_to_list
+      to: Invoicing
+    actions:
+      - type: set_custom_field
+        field: Invoice Status
+        value: draft
+      - type: create_subtask
+        name: "Send invoice for {{task.name}}"
+
+  - id: overdue-nudge
+    name: Open tasks that hit their due date are bumped
+    trigger:
+      type: due_date_arrives
+    conditions:
+      - field: status
+        op: not_in
+        value: [complete, cancelled]
+      - field: priority
+        op: not_in
+        value: [urgent, high]
+    actions:
+      - type: change_priority
+        to: high
+      - type: add_comment
+        text: "Due today and still {{task.status}}."
+
+  - id: legacy-auto-close
+    name: Old rule kept for reference
+    enabled: false
+    trigger:
+      type: status_changed
+      to: in review
+    actions:
+      - type: change_status
+        to: complete

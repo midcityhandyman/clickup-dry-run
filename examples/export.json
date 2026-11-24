@@ -1,0 +1,31 @@
+{
+  "_note": "Synthetic data. Every task, person and value here is invented for the demo.",
+  "workspace": "Sample Workspace",
+  "exported_at": "2026-03-02T08:00:00",
+  "tasks": [
+    {"id": "T-1001", "name": "Sample job: replace hallway light fixture", "status": "new", "priority": "normal", "assignees": [], "tags": [], "list": "Intake", "due_date": null, "custom": {"Estimate": 180}},
+    {"id": "T-1002", "name": "Sample job: patch drywall in spare room", "status": "scheduled", "priority": "normal", "assignees": ["Jordan Placeholder"], "tags": ["triage"], "list": "Scheduled Jobs", "due_date": "2026-03-06", "custom": {"Estimate": 420}},
+    {"id": "T-1003", "name": "Sample job: regrout shower surround", "status": "in progress", "priority": "high", "assignees": ["Casey Demo"], "tags": [], "list": "Scheduled Jobs", "due_date": "2026-03-04", "custom": {"Estimate": 650}},
+    {"id": "T-1004", "name": "Sample job: free site visit and quote", "status": "in progress", "priority": "low", "assignees": ["Casey Demo"], "tags": [], "list": "Scheduled Jobs", "due_date": "2026-03-05", "custom": {"Estimate": 0}},
+    {"id": "T-1005", "name": "Sample job: leaking kitchen tap", "status": "scheduled", "priority": "normal", "assignees": ["Jordan Placeholder"], "tags": [], "list": "Scheduled Jobs", "due_date": "2026-03-09", "custom": {"Estimate": 95}},
+    {"id": "T-1006", "name": "Sample job: hang three interior doors", "status": "in progress", "priority": "normal", "assignees": ["Jordan Placeholder"], "tags": ["triage"], "list": "Scheduled Jobs", "due_date": "2026-03-06", "custom": {"Estimate": 540}},
+    {"id": "T-1007", "name": "Sample job: gutter clean, two storey", "status": "scheduled", "priority": "normal", "assignees": [], "tags": [], "list": "Scheduled Jobs", "due_date": "2026-03-06", "custom": {"Estimate": 210}},
+    {"id": "T-1008", "name": "Sample job: deck board replacement", "status": "complete", "priority": "normal", "assignees": ["Casey Demo"], "tags": [], "list": "Invoicing", "due_date": "2026-03-06", "custom": {"Estimate": 880, "Invoice Status": "sent"}},
+    {"id": "T-1009", "name": "Sample enquiry: fence repair photo request", "status": "new", "priority": "normal", "assignees": [], "tags": [], "list": "Intake", "due_date": null, "custom": {}},
+    {"id": "T-1010", "name": "Sample job: bathroom fan install", "status": "in review", "priority": "high", "assignees": ["Riley Example"], "tags": ["escalated"], "list": "Scheduled Jobs", "due_date": "2026-03-10", "custom": {"Estimate": 310}},
+    {"id": "T-1011", "name": "Sample job: paint touch ups, rental unit", "status": "scheduled", "priority": "low", "assignees": ["Jordan Placeholder"], "tags": [], "list": "Scheduled Jobs", "due_date": "2026-03-12", "custom": {"Estimate": 260}},
+    {"id": "T-1012", "name": "Sample admin: restock fastener bins", "status": "new", "priority": "low", "assignees": [], "tags": [], "list": "Shop Admin", "due_date": "2026-03-20", "custom": {}}
+  ],
+  "events": [
+    {"id": "e01", "at": "2026-03-02T09:05:00", "type": "task_created", "task_id": "T-1001"},
+    {"id": "e02", "at": "2026-03-02T09:40:00", "type": "task_created", "task_id": "T-1009"},
+    {"id": "e03", "at": "2026-03-02T11:15:00", "type": "task_created", "task_id": "T-1012"},
+    {"id": "e04", "at": "2026-03-03T08:30:00", "type": "status_changed", "task_id": "T-1003", "from": "in progress", "to": "in review"},
+    {"id": "e05", "at": "2026-03-03T14:10:00", "type": "priority_changed", "task_id": "T-1005", "to": "urgent"},
+    {"id": "e06", "at": "2026-03-04T10:00:00", "type": "status_changed", "task_id": "T-1006", "from": "in progress", "to": "complete"},
+    {"id": "e07", "at": "2026-03-04T16:45:00", "type": "status_changed", "task_id": "T-1004", "from": "in progress", "to": "complete"},
+    {"id": "e08", "at": "2026-03-05T09:20:00", "type": "tag_added", "task_id": "T-1011", "tag": "escalated"},
+    {"id": "e09", "at": "2026-03-05T13:00:00", "type": "priority_changed", "task_id": "T-1010", "to": "urgent"},
+    {"id": "e10", "at": "2026-03-05T15:30:00", "type": "status_changed", "task_id": "T-1099", "from": "new", "to": "scheduled"}
+  ]
+}

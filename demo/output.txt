@@ -1,0 +1,73 @@
+$ python -m dryrun examples/automations.yaml examples/export.json --as-of 2026-03-06 --monthly-limit 100
+
+DRY RUN: nothing was sent anywhere. All changes below are simulated.
+====================================================================
+Tasks in export: 12   Events replayed: 13   Automations: 8 (1 disabled)
+
+Runs by automation
+  intake-triage          2 runs
+  urgent-escalation      3 runs (1 fired by another automation)
+  escalated-is-urgent    2 runs (1 changed nothing, 1 fired by another automation)
+  review-handoff         1 run
+  complete-to-invoicing  1 run
+  invoicing-arrival      1 run (1 fired by another automation)
+  overdue-nudge          2 runs
+  legacy-auto-close      disabled, never fires
+
+Tasks that would change: 8 of 12
+  T-1001  Sample job: replace hallway light fixture
+    assignees  (none) -> [Alex Sample]   [intake-triage]
+    tags       (none) -> [triage]   [intake-triage]
+  T-1002  Sample job: patch drywall in spare room
+    priority  normal -> high   [overdue-nudge]
+  T-1003  Sample job: regrout shower surround
+    assignees  [Casey Demo] -> [Casey Demo, Riley Example]   [review-handoff]
+    due_date   2026-03-04 -> 2026-03-05   [review-handoff]
+  T-1005  Sample job: leaking kitchen tap
+    tags  (none) -> [escalated]   [urgent-escalation]
+  T-1006  Sample job: hang three interior doors
+    tags                   [triage] -> (none)   [complete-to-invoicing]
+    list                   Scheduled Jobs -> Invoicing   [complete-to-invoicing]
+    custom.Invoice Status  (none) -> draft   [invoicing-arrival]
+  T-1007  Sample job: gutter clean, two storey
+    priority  normal -> high   [overdue-nudge]
+  T-1009  Sample enquiry: fence repair photo request
+    assignees  (none) -> [Alex Sample]   [intake-triage]
+    tags       (none) -> [triage]   [intake-triage]
+  T-1011  Sample job: paint touch ups, rental unit
+    priority  low -> urgent   [escalated-is-urgent]
+
+Side effects that would be created: 6
+  T-1005  comment: "Urgent: Sample job: leaking kitchen tap needs a same day reply."   [urgent-escalation]
+  T-1006  subtask: "Send invoice for Sample job: hang three interior doors"   [invoicing-arrival]
+  T-1011  comment: "Urgent: Sample job: paint touch ups, rental unit needs a same day reply."   [urgent-escalation]
+  T-1010  comment: "Urgent: Sample job: bathroom fan install needs a same day reply."   [urgent-escalation]
+  T-1002  comment: "Due today and still scheduled."   [overdue-nudge]
+  T-1007  comment: "Due today and still scheduled."   [overdue-nudge]
+
+Run log (in firing order)
+    1. intake-triage on T-1001 via task_created: 2 field change(s)
+    2. intake-triage on T-1009 via task_created: 2 field change(s)
+    3. review-handoff on T-1003 via status_changed: 2 field change(s)
+    4. urgent-escalation on T-1005 via priority_changed: 1 field change(s)
+    5. escalated-is-urgent on T-1005 via tag_added <- urgent-escalation: no change
+    6. complete-to-invoicing on T-1006 via status_changed: 2 field change(s)
+    7. invoicing-arrival on T-1006 via moved_to_list <- complete-to-invoicing: 1 field change(s)
+    8. escalated-is-urgent on T-1011 via tag_added: 1 field change(s)
+    9. urgent-escalation on T-1011 via priority_changed <- escalated-is-urgent: 1 side effect(s) only
+   10. urgent-escalation on T-1010 via priority_changed: 1 side effect(s) only
+   11. overdue-nudge on T-1002 via due_date_arrives: 1 field change(s)
+   12. overdue-nudge on T-1007 via due_date_arrives: 1 field change(s)
+
+Warnings: 1
+  ! event e10 refers to task T-1099, not in the export; skipped
+
+Automation usage
+  Runs this replay:                12
+  Runs that change nothing:        1
+  Runs fired by other automations: 3
+  Event window:                    5 day(s)
+  Projected over 30 days:          72
+  Monthly limit:                   100 (72.0% used at this rate, within limit)
+
+exit code: 0
